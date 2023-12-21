@@ -1,21 +1,24 @@
-import { expect } from 'chai';
-import { formatCounterOrGauge, formatHistogramOrSummary } from '../src/utils';
+import { expect } from "chai";
+import { formatCounterOrGauge, formatHistogramOrSummary } from "../src/utils";
 
-describe('utils', () => {
-  it('formats a counter/gauge metric', () => {
+describe("utils", () => {
+  it("formats a counter/gauge metric", () => {
     const simple = { value: 2 };
-    const complex = { labels: { ok: 'true', status: 'success', code: 200 }, value: 1 };
+    const complex = {
+      labels: { ok: "true", status: "success", code: 200 },
+      value: 1,
+    };
 
-    expect(formatCounterOrGauge('my_counter', simple)).equals('my_counter 2\n');
-    expect(formatCounterOrGauge('my_counter', complex)).equals(
+    expect(formatCounterOrGauge("my_counter", simple)).equals("my_counter 2\n");
+    expect(formatCounterOrGauge("my_counter", complex)).equals(
       'my_counter{ok="true",status="success",code="200"} 1\n',
     );
   });
 
-  it('formats a histogram metric', () => {
-    let desired = '';
-    desired += 'my_histogram_count 2\n';
-    desired += 'my_histogram_sum 501\n';
+  it("formats a histogram metric", () => {
+    let desired = "";
+    desired += "my_histogram_count 2\n";
+    desired += "my_histogram_sum 501\n";
     desired += 'my_histogram_bucket{le="200"} 0\n';
     desired += 'my_histogram_bucket{le="300"} 2\n';
     desired += 'my_histogram_bucket{le="400"} 0\n';
@@ -28,16 +31,23 @@ describe('utils', () => {
         raw: [201, 300],
       },
     };
-    const complex = { ...simple, labels: { instance: 'some_instance', ok: 'true' } };
-    expect(formatHistogramOrSummary('my_histogram', simple)).equals(desired);
+    const complex = {
+      ...simple,
+      labels: { instance: "some_instance", ok: "true" },
+    };
+    expect(formatHistogramOrSummary("my_histogram", simple)).equals(desired);
 
     desired = 'my_histogram_count{instance="some_instance",ok="true"} 2\n';
     desired += 'my_histogram_sum{instance="some_instance",ok="true"} 501\n';
-    desired += 'my_histogram_bucket{le="200",instance="some_instance",ok="true"} 0\n';
-    desired += 'my_histogram_bucket{le="300",instance="some_instance",ok="true"} 2\n';
-    desired += 'my_histogram_bucket{le="400",instance="some_instance",ok="true"} 0\n';
-    desired += 'my_histogram_bucket{le="500",instance="some_instance",ok="true"} 0\n';
+    desired +=
+      'my_histogram_bucket{le="200",instance="some_instance",ok="true"} 0\n';
+    desired +=
+      'my_histogram_bucket{le="300",instance="some_instance",ok="true"} 2\n';
+    desired +=
+      'my_histogram_bucket{le="400",instance="some_instance",ok="true"} 0\n';
+    desired +=
+      'my_histogram_bucket{le="500",instance="some_instance",ok="true"} 0\n';
 
-    expect(formatHistogramOrSummary('my_histogram', complex)).equals(desired);
+    expect(formatHistogramOrSummary("my_histogram", complex)).equals(desired);
   });
 });

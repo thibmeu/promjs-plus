@@ -1,5 +1,5 @@
-import { Labels, Metric, MetricValue } from './types';
-import { findExistingMetric } from './utils';
+import { Labels, Metric, MetricValue } from "./types";
+import { findExistingMetric } from "./utils";
 
 export abstract class Collector<T extends MetricValue> {
   private readonly data: Metric<T>[];

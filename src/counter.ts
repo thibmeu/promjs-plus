@@ -1,5 +1,5 @@
-import { Collector } from './collector';
-import { CounterValue, Labels } from './types';
+import { Collector } from "./collector";
+import { CounterValue, Labels } from "./types";
 
 export class Counter extends Collector<CounterValue> {
   inc(labels?: Labels): this {
@@ -9,7 +9,9 @@ export class Counter extends Collector<CounterValue> {
 
   add(amount: number, labels?: Labels): this {
     if (amount < 0) {
-      throw new Error(`Expected increment amount to be greater than -1. Received: ${amount}`);
+      throw new Error(
+        `Expected increment amount to be greater than -1. Received: ${amount}`,
+      );
     }
     const metric = this.get(labels);
     this.set(metric ? metric.value + amount : amount, labels);

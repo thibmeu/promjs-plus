@@ -1,5 +1,5 @@
-import { Collector } from './collector';
-import { HistogramValue, HistogramValueEntries, Labels } from './types';
+import { Collector } from "./collector";
+import { HistogramValue, HistogramValueEntries, Labels } from "./types";
 
 function findMinBucketIndex(ary: number[], num: number): number | undefined {
   if (num < ary[ary.length - 1]) {
@@ -15,10 +15,13 @@ function findMinBucketIndex(ary: number[], num: number): number | undefined {
 
 function getInitialValue(buckets: number[]): HistogramValue {
   // Make the skeleton to which values will be saved.
-  const entries = buckets.reduce((result, b) => {
-    result[b.toString()] = 0;
-    return result;
-  }, { '+Inf': 0 } as HistogramValueEntries);
+  const entries = buckets.reduce(
+    (result, b) => {
+      result[b.toString()] = 0;
+      return result;
+    },
+    { "+Inf": 0 } as HistogramValueEntries,
+  );
 
   return {
     entries,
@@ -47,7 +50,7 @@ export class Histogram extends Collector<HistogramValue> {
     }
 
     metric.value.raw.push(value);
-    metric.value.entries['+Inf'] += 1;
+    metric.value.entries["+Inf"] += 1;
 
     const minBucketIndex = findMinBucketIndex(this.buckets, value);
 

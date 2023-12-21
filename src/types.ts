@@ -1,9 +1,9 @@
-import { Counter } from './counter';
-import { Gauge } from './gauge';
-import { Registry } from './registry';
-import { Histogram } from './histogram';
+import { Counter } from "./counter";
+import { Gauge } from "./gauge";
+import { Registry } from "./registry";
+import { Histogram } from "./histogram";
 
-export type CollectorType = 'counter' | 'gauge' | 'histogram';
+export type CollectorType = "counter" | "gauge" | "histogram";
 
 export type RegistryType = Registry;
 export type GaugeType = Gauge;
