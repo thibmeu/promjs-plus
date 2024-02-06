@@ -1,6 +1,6 @@
 {
   "name": "promjs-plus",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "A Prometheus metrics registry implemented in TypeScript",
   "main": "lib/index.js",
   "module": "lib/index.js",
