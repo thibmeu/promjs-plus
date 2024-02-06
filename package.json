@@ -1,19 +1,32 @@
 {
   "name": "promjs-plus",
   "version": "0.5.0",
-  "description": "",
+  "description": "A Prometheus metrics registry implemented in TypeScript",
   "main": "lib/index.js",
+  "module": "lib/index.js",
   "typings": "lib/index.d.ts",
+  "private": false,
+  "files": [
+    "lib/src/**/*.!(tsbuildinfo)"
+  ],
+  "keywords": [
+    "prometheus",
+    "metrics",
+    "client",
+    "typescript"
+  ],
+  "homepage": "https://github.com/thibmeu/promjs-plus#readme",
+  "repository": "github:thibmeu/promjs-plus",
   "scripts": {
-    "build": "rm -rf lib && npm run build:js && npm run build:types && npm run build:bundle && cp package.json README.md ./lib",
+    "build": "rm -rf lib && npm run build:js && npm run build:types && npm run build:bundle",
     "build:js": "esbuild src/*.ts --platform=neutral --format=cjs --sourcemap=inline --outdir=lib",
-    "build:bundle": "esbuild src/index.ts --bundle --minify --outdir=lib/browser",
+    "build:bundle": "esbuild src/index.ts --bundle --minify --outfile=lib/browser/promjs-plus.min,js",
     "build:types": "tsc --emitDeclarationOnly",
     "format": "eslint . --fix",
     "lint": "eslint .",
     "test": "mocha --recursive",
     "release": "npm run lint && npm run test && npm version && npm run build && yarn push",
-    "push": "cd lib && npm login && npm publish && git push --set-upstream origin master --follow-tags"
+    "push": "npm login && npm publish && git push --set-upstream origin master --follow-tags"
   },
   "license": "Apache-2.0",
   "devDependencies": {
