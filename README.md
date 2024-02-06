@@ -13,7 +13,7 @@ A Prometheus metrics registry implemented in TypeScript. It forks [weaveworks/pr
 
 Install via `npm`:
 
-`$ npm install --save promjs`
+`$ npm install --save promjs-plus`
 
 ## Usage
 
@@ -193,7 +193,7 @@ console.log(registry.metrics());
 
 ## Getting Help
 
-If you have any questions about, feedback for or problems with `promjs`:
+If you have any questions about, feedback for or problems with `promjs-plus`:
 
-- [File an issue](https://github.com/thibmeu/promjs/issues/new).
+- [File an issue](https://github.com/thibmeu/promjs-plus/issues/new).
 
