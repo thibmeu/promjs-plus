@@ -1,6 +1,6 @@
-# Fork: promjs
+# promjs-plus
 
-A Prometheus metrics registry implemented in TypeScript
+A Prometheus metrics registry implemented in TypeScript. It forks [weaveworks/promjs](https://github.com/weaveworks/promjs) which is deprecated.
 
 ## Goals
 
@@ -15,17 +15,13 @@ Install via `npm`:
 
 `$ npm install --save promjs`
 
-or via `yarn`:
-
-`$ yarn add promjs`
-
 ## Usage
 
 ```javascript
 // Using es6 imports
-import prom from 'promjs';
+import prom from 'promjs-plus';
 // Using CommonJS
-const prom = require('promjs');
+const prom = require('promjs-plus');
 
 const registry = prom();
 const pageRequestCounter = registry.create('counter', 'page_requests', 'A counter for page requests');
@@ -58,7 +54,7 @@ Arguments
 
 Example
 ```javascript
-import prom from 'promjs';
+import prom from 'promjs-plus';
 
 const registry = prom();
 const counter = registry.create('counter', 'my_counter', 'A counter for things');
