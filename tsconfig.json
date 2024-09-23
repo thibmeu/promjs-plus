@@ -17,7 +17,8 @@
     "strictFunctionTypes": true,
     "declaration": true,
     "noUnusedLocals": true,
-    "module": "commonjs",
+    "module": "esnext",
+    "moduleResolution": "node",
     "baseUrl": "."
   },
   "exclude": [

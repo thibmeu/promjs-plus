@@ -2,6 +2,7 @@
   "name": "promjs-plus",
   "version": "0.5.3",
   "description": "A Prometheus metrics registry implemented in TypeScript",
+  "type": "module",
   "main": "lib/index.js",
   "module": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -19,12 +20,12 @@
   "repository": "github:thibmeu/promjs-plus",
   "scripts": {
     "build": "rm -rf lib && npm run build:js && npm run build:types && npm run build:bundle",
-    "build:js": "esbuild src/*.ts --platform=neutral --format=cjs --sourcemap=inline --outdir=lib",
-    "build:bundle": "esbuild src/index.ts --bundle --minify --outfile=lib/browser/promjs-plus.min,js",
+    "build:js": "esbuild src/*.ts --platform=neutral --format=esm --sourcemap=inline --outdir=lib",
+    "build:bundle": "esbuild src/index.ts --bundle --minify --format=esm --outfile=lib/browser/promjs-plus.min.js",
     "build:types": "tsc --emitDeclarationOnly",
     "format": "eslint . --fix",
     "lint": "eslint .",
-    "test": "mocha --recursive",
+    "test": "node --loader ts-node/esm --experimental-specifier-resolution=node node_modules/mocha/bin/mocha.js 'test/**/*.ts'",
     "release": "npm run lint && npm run test && npm version && npm run build && yarn push",
     "push": "npm login && npm publish && git push --set-upstream origin main --follow-tags"
   },
