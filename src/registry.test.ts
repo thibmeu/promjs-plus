@@ -1,7 +1,7 @@
-import { expect } from "chai";
-import { Collector } from "../src/collector";
-import { Counter } from "../src/counter";
-import { Registry } from "../src/registry";
+import { beforeEach, describe, expect, it } from "vitest";
+import { Collector } from "./collector";
+import { Counter } from "./counter";
+import { Registry } from "./registry";
 
 describe("Registry", () => {
   let registry: Registry;

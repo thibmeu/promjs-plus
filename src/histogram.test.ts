@@ -1,5 +1,5 @@
-import { expect } from "chai";
-import { Histogram } from "../src/histogram";
+import { beforeEach, describe, expect, it } from "vitest";
+import { Histogram } from "./histogram";
 
 const buckets = [200, 400, 750, 1000];
 

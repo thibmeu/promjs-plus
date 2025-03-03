@@ -49,8 +49,7 @@ export function findExistingMetric<T extends MetricValue>(
       return false;
     }
     const entries = Object.entries(labels);
-    for (let i = 0; i < entries.length; i += 1) {
-      const [label, value] = entries[i];
+    for (const [label, value] of entries) {
       if (v.labels[label] !== value) {
         return false;
       }

@@ -20,13 +20,11 @@ type CollectorForType<T extends CollectorType> = T extends "histogram"
   ? Counter
   : never;
 
-interface RegistryItem<T extends CollectorType> {
-  [key: string]: {
+type RegistryItem<T extends CollectorType> = Record<string, {
     type: T;
     help: string;
     instance: CollectorForType<T>;
-  };
-}
+  }>;
 
 export class Registry {
   private data: {

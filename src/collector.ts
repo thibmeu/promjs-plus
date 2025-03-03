@@ -35,8 +35,7 @@ export abstract class Collector<T extends MetricValue> {
         return false;
       }
       const entries = Object.entries(labels);
-      for (let i = 0; i < entries.length; i += 1) {
-        const [label, value] = entries[i];
+      for (const [label, value] of entries) {
         if (item.labels[label] !== value) {
           return false;
         }
@@ -46,8 +45,8 @@ export abstract class Collector<T extends MetricValue> {
   }
 
   resetAll(): this {
-    for (let i = 0; i < this.data.length; i += 1) {
-      this.reset(this.data[i].labels);
+    for (const { labels } of this.data) {
+      this.reset(labels);
     }
 
     return this;

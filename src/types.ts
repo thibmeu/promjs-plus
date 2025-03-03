@@ -11,9 +11,7 @@ export type CounterType = Counter;
 export type HistogramType = Histogram;
 
 export type CounterValue = number;
-export interface HistogramValueEntries {
-  [key: string]: number;
-}
+export type HistogramValueEntries = Record<string, number>;
 
 export interface HistogramValue {
   entries: HistogramValueEntries;
@@ -28,6 +26,4 @@ export interface Metric<T extends MetricValue> {
   labels?: Labels;
 }
 
-export interface Labels {
-  [key: string]: string | number;
-}
+export type Labels = Record<string, string | number>;

@@ -1,11 +1,17 @@
 {
   "name": "promjs-plus",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "description": "A Prometheus metrics registry implemented in TypeScript",
-  "main": "lib/index.js",
-  "module": "lib/index.js",
-  "typings": "lib/index.d.ts",
-  "private": false,
+  "main": "./lib/index.js",
+  "module": "./lib/index.mjs",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "require": "./lib/index.js",
+      "import": "./lib/index.mjs"
+    }
+  },
   "files": [
     "lib/**/*.!(tsbuildinfo)"
   ],
@@ -15,36 +21,27 @@
     "client",
     "typescript"
   ],
+  "bugs": {
+    "url": "https://github.com/thibmeu/quicvarint/issues"
+  },
   "homepage": "https://github.com/thibmeu/promjs-plus#readme",
   "repository": "github:thibmeu/promjs-plus",
   "scripts": {
-    "build": "rm -rf lib && npm run build:js && npm run build:types && npm run build:bundle",
-    "build:js": "esbuild src/*.ts --platform=neutral --format=cjs --sourcemap=inline --outdir=lib",
-    "build:bundle": "esbuild src/index.ts --bundle --minify --outfile=lib/browser/promjs-plus.min,js",
-    "build:types": "tsc --emitDeclarationOnly",
-    "format": "eslint . --fix",
-    "lint": "eslint .",
-    "test": "mocha --recursive",
-    "release": "npm run lint && npm run test && npm version && npm run build && yarn push",
+    "build": "tsup src/index.ts -d lib --format cjs,esm --dts --clean",
+    "format": "eslint src/*.ts --fix",
+    "lint": "eslint src/*.ts",
+    "test": "vitest --run",
+    "release": "npm run lint && npm run test && npm version && npm run build && npm run push",
     "push": "npm login && npm publish && git push --set-upstream origin main --follow-tags"
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/chai": "^4.3.11",
-    "@types/mocha": "^10.0.6",
-    "@types/node": "^20.10.5",
-    "@typescript-eslint/eslint-plugin": "^6.15.0",
-    "@typescript-eslint/parser": "^6.15.0",
-    "chai": "^4.3.10",
-    "esbuild": "^0.19.10",
-    "eslint": "^8.56.0",
-    "eslint-config-prettier": "9.0.0",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-prettier": "5.0.1",
+    "@eslint/js": "^9.21.0",
+    "eslint": "^8.57.1",
     "eslint-plugin-security": "^1.7.1",
-    "mocha": "^10.2.0",
-    "prettier": "3.0.3",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.3.3"
+    "tsup": "^8.4.0",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.25.0",
+    "vitest": "^3.0.7"
   }
 }

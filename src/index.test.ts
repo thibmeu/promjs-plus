@@ -1,6 +1,6 @@
-import { expect } from "chai";
-import prom from "../src";
-import { Registry } from "../src/registry";
+import { beforeEach, describe, expect, it } from "vitest";
+import prom from ".";
+import { Registry } from "./registry";
 
 describe("promjs", () => {
   // e2e Test
@@ -83,8 +83,7 @@ describe("promjs", () => {
   });
 
   it("reports metrics", () => {
-    for (let i = 0; i < desired.length; i += 1) {
-      const d = desired[i];
+    for (const d of desired) {
       if (!actual.includes(d)) {
         errors.push(`Actual: ${actual}\nExpected: ${d}`);
       }
@@ -98,8 +97,7 @@ describe("promjs", () => {
 
     // Check that the end of each metric string is a 0
     expect(cleared.length).greaterThan(5);
-    for (let i = 0; i < cleared.length; i += 1) {
-      const m = cleared[i];
+    for (const m of cleared) {
       if (m && !m.includes("TYPE") && !m.includes("HELP")) {
         expect(m.slice(-1)).equals("0");
       }

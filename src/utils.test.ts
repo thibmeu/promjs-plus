@@ -1,5 +1,5 @@
-import { expect } from "chai";
-import { formatCounterOrGauge, formatHistogramOrSummary } from "../src/utils";
+import { describe, expect, it } from "vitest";
+import { formatCounterOrGauge, formatHistogramOrSummary } from "./utils";
 
 describe("utils", () => {
   it("formats a counter/gauge metric", () => {

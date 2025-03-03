@@ -1,5 +1,5 @@
-import { expect } from "chai";
-import { Counter } from "../src/counter";
+import { beforeEach, describe, expect, it } from "vitest";
+import { Counter } from "./counter";
 
 describe("Counter", () => {
   let counter: Counter;
