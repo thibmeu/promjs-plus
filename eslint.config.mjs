@@ -6,7 +6,7 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   eslint.configs.recommended,
-  // security.configs.recommended,
+  security.configs.recommended,
   tseslint.configs.recommended,
   tseslint.configs.stylistic,
 );
