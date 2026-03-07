@@ -85,18 +85,29 @@ Sets default labels applied to all metrics in output. Metric-level labels overri
 
 Returns a copy of the current default labels.
 
-### registry.metrics() => string
+### registry.metrics([options]) => string
 
 Returns a prometheus formatted string containing all existing metrics.
+
+Options:
+- `format` (_String_): Output format. Either `'prometheus'` (default) or `'openmetrics'`. OpenMetrics format appends `# EOF` to the output.
 
 ```javascript
 const counter = registry.create('counter', 'my_counter', 'A counter for things');
 counter.inc();
+
 console.log(registry.metrics());
 // =>
-// # HELP my_counter A counter for things \n
+// # HELP my_counter A counter for things
 // # TYPE my_counter counter
-// my_counter 1 \n
+// my_counter 1
+
+console.log(registry.metrics({ format: 'openmetrics' }));
+// =>
+// # HELP my_counter A counter for things
+// # TYPE my_counter counter
+// my_counter 1
+// # EOF
 ```
 
 ### registry.clear() => self
@@ -190,6 +201,25 @@ console.log(registry.metrics());
 
 Histograms are used to group values into pre-defined buckets. Buckets are passed in to the `registry.create()` call.
 
+### Bucket Helpers
+
+Two helper functions are available for generating bucket boundaries:
+
+```javascript
+import { linearBuckets, exponentialBuckets } from 'promjs-plus';
+
+// linearBuckets(start, width, count) => number[]
+linearBuckets(0, 10, 5);      // [0, 10, 20, 30, 40]
+
+// exponentialBuckets(start, factor, count) => number[]
+exponentialBuckets(1, 2, 5);  // [1, 2, 4, 8, 16]
+
+// Use with histogram
+const histogram = registry.create('histogram', 'request_duration_ms', 'Request duration', 
+  exponentialBuckets(1, 2, 10)  // 1, 2, 4, 8, 16, 32, 64, 128, 256, 512ms
+);
+```
+
 ### histogram.observe(value) => self
 
 Adds `value` to a pre-existing bucket.`value` must be a number.
@@ -201,19 +231,32 @@ const histogram = registry.create('histogram', 'response_time', 'The response ti
   400,
   500
 ]);
+histogram.observe(199);
 histogram.observe(299);
-histogram.observe(253, { path: '/api/users', status: 200 });
-histogram.observe(499, { path: '/api/users', status: 200 });
+histogram.observe(450);
 
 console.log(registry.metrics());
 // =>
 // # HELP response_time The response time
 // # TYPE response_time histogram
 // response_time_count 3
-// response_time_sum 599
+// response_time_sum 948
 // response_time_bucket{le="200"} 1
-// response_time_bucket{le="400",path="/api/users",status="200"} 1
-// response_time_bucket{le="200",path="/api/users",status="200"} 1
+// response_time_bucket{le="300"} 2
+// response_time_bucket{le="400"} 2
+// response_time_bucket{le="500"} 3
+// response_time_bucket{le="+Inf"} 3
+```
+
+## Constants
+
+Content-Type headers for HTTP responses:
+
+```javascript
+import { PROMETHEUS_CONTENT_TYPE, OPENMETRICS_CONTENT_TYPE } from 'promjs-plus';
+
+// PROMETHEUS_CONTENT_TYPE = 'text/plain; version=0.0.4'
+// OPENMETRICS_CONTENT_TYPE = 'application/openmetrics-text; version=1.0.0'
 ```
 
 ## Getting Help
