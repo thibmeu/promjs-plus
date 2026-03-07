@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import prom from ".";
+import prom, { linearBuckets, exponentialBuckets } from ".";
 import { Registry } from "./registry";
 
 describe("promjs", () => {
@@ -102,5 +102,40 @@ describe("promjs", () => {
         expect(m.slice(-1)).equals("0");
       }
     }
+  });
+});
+
+describe("linearBuckets", () => {
+  it("generates linear buckets", () => {
+    expect(linearBuckets(0, 10, 5)).deep.equals([0, 10, 20, 30, 40]);
+    expect(linearBuckets(5, 5, 3)).deep.equals([5, 10, 15]);
+    expect(linearBuckets(100, 50, 4)).deep.equals([100, 150, 200, 250]);
+  });
+
+  it("throws on count < 1", () => {
+    expect(() => linearBuckets(0, 10, 0)).throws("count >= 1");
+    expect(() => linearBuckets(0, 10, -1)).throws("count >= 1");
+  });
+});
+
+describe("exponentialBuckets", () => {
+  it("generates exponential buckets", () => {
+    expect(exponentialBuckets(1, 2, 5)).deep.equals([1, 2, 4, 8, 16]);
+    expect(exponentialBuckets(10, 10, 3)).deep.equals([10, 100, 1000]);
+    expect(exponentialBuckets(0.001, 10, 4)).deep.equals([0.001, 0.01, 0.1, 1]);
+  });
+
+  it("throws on start <= 0", () => {
+    expect(() => exponentialBuckets(0, 2, 5)).throws("start > 0");
+    expect(() => exponentialBuckets(-1, 2, 5)).throws("start > 0");
+  });
+
+  it("throws on factor <= 1", () => {
+    expect(() => exponentialBuckets(1, 1, 5)).throws("factor > 1");
+    expect(() => exponentialBuckets(1, 0.5, 5)).throws("factor > 1");
+  });
+
+  it("throws on count < 1", () => {
+    expect(() => exponentialBuckets(1, 2, 0)).throws("count >= 1");
   });
 });

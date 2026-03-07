@@ -6,6 +6,7 @@ import {
   MetricFormat,
   PROMETHEUS_CONTENT_TYPE,
   OPENMETRICS_CONTENT_TYPE,
+  exponentialBuckets,
 } from 'promjs-plus';
 
 // Create registry with default labels (applied to all metrics)
@@ -13,7 +14,8 @@ const registry = new Registry({ defaultLabels: { env: 'production', region: 'ewr
 
 // Define metrics
 const requestCounter = registry.create('counter', 'http_requests_total', 'Total HTTP requests');
-const requestDuration = registry.create('histogram', 'http_request_duration_ms', 'Request duration in ms');
+// Use exponentialBuckets for latency: 1, 2, 4, 8, 16, 32, 64, 128, 256, 512ms
+const requestDuration = registry.create('histogram', 'http_request_duration_ms', 'Request duration in ms', exponentialBuckets(1, 2, 10));
 const activeConnections = registry.create('gauge', 'active_connections', 'Current active connections');
 
 export default {
