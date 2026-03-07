@@ -22,7 +22,7 @@
     "typescript"
   ],
   "bugs": {
-    "url": "https://github.com/thibmeu/quicvarint/issues"
+    "url": "https://github.com/thibmeu/promjs-plus/issues"
   },
   "homepage": "https://github.com/thibmeu/promjs-plus#readme",
   "repository": "github:thibmeu/promjs-plus",
@@ -31,6 +31,7 @@
     "format": "eslint src/*.ts --fix",
     "lint": "eslint src/*.ts",
     "test": "vitest --run",
+    "typecheck": "tsc --noEmit",
     "release": "npm run lint && npm run test && npm version && npm run build && npm run push",
     "push": "npm login && npm publish && git push --set-upstream origin main --follow-tags"
   },
