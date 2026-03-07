@@ -6,6 +6,7 @@ import {
   CollectorType,
   CounterValue,
   HistogramValue,
+  Labels,
   Metric,
   MetricValue,
 } from "./types";
@@ -26,17 +27,32 @@ type RegistryItem<T extends CollectorType> = Record<string, {
     instance: CollectorForType<T>;
   }>;
 
+export interface RegistryOptions {
+  defaultLabels?: Labels;
+}
+
 export class Registry {
   private data: {
     [K in CollectorType]: RegistryItem<K>;
   };
+  private _defaultLabels: Labels;
 
-  constructor() {
+  constructor(options: RegistryOptions = {}) {
     this.data = {
       counter: {},
       gauge: {},
       histogram: {},
     };
+    this._defaultLabels = options.defaultLabels ?? {};
+  }
+
+  setDefaultLabels(labels: Labels): this {
+    this._defaultLabels = labels;
+    return this;
+  }
+
+  getDefaultLabels(): Labels {
+    return this._defaultLabels;
   }
 
   private validateInput(
@@ -127,8 +143,10 @@ export class Registry {
                 ? formatHistogramOrSummary(
                     name,
                     value as Metric<HistogramValue>,
+                    "le",
+                    this._defaultLabels,
                   )
-                : formatCounterOrGauge(name, value as Metric<CounterValue>);
+                : formatCounterOrGauge(name, value as Metric<CounterValue>, this._defaultLabels);
             return str + formatted;
           }, "");
           return result;

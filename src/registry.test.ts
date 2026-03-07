@@ -56,4 +56,44 @@ describe("Registry", () => {
     };
     expect(dupe).throw();
   });
+
+  describe("default labels", () => {
+    it("applies default labels via constructor", () => {
+      const reg = new Registry({ defaultLabels: { env: "prod", region: "us" } });
+      const c = reg.create("counter", "requests", "");
+      c.inc();
+      expect(reg.metrics()).contains('requests{env="prod",region="us"} 1');
+    });
+
+    it("applies default labels via setDefaultLabels", () => {
+      const reg = new Registry();
+      reg.setDefaultLabels({ service: "api" });
+      const c = reg.create("counter", "requests", "");
+      c.inc();
+      expect(reg.metrics()).contains('requests{service="api"} 1');
+    });
+
+    it("metric labels override default labels", () => {
+      const reg = new Registry({ defaultLabels: { env: "prod" } });
+      const c = reg.create("counter", "requests", "");
+      c.inc({ env: "staging", path: "/" });
+      // metric's env="staging" overrides default env="prod"
+      expect(reg.metrics()).contains('requests{env="staging",path="/"} 1');
+    });
+
+    it("returns default labels via getDefaultLabels", () => {
+      const reg = new Registry({ defaultLabels: { foo: "bar" } });
+      expect(reg.getDefaultLabels()).deep.equals({ foo: "bar" });
+    });
+
+    it("applies default labels to histograms", () => {
+      const reg = new Registry({ defaultLabels: { env: "test" } });
+      const h = reg.create("histogram", "latency", "", [100, 500]);
+      h.observe(50);
+      const output = reg.metrics();
+      expect(output).contains('latency_count{env="test"} 1');
+      expect(output).contains('latency_sum{env="test"} 50');
+      expect(output).contains('latency_bucket{le="100",env="test"} 1');
+    });
+  });
 });

@@ -1,9 +1,12 @@
 import { HistogramValue, Labels, Metric, MetricValue } from "./types";
 
-function getLabelPairs(metric: Metric<MetricValue>): string {
-  const pairs = Object.entries(metric.labels || {}).map(
-    ([k, v]) => `${k}="${v}"`,
-  );
+function getLabelPairs(
+  metric: Metric<MetricValue>,
+  defaultLabels: Labels = {},
+): string {
+  // Metric labels override default labels
+  const merged = { ...defaultLabels, ...metric.labels };
+  const pairs = Object.entries(merged).map(([k, v]) => `${k}="${v}"`);
   return pairs.length === 0 ? "" : `${pairs.join(",")}`;
 }
 
@@ -11,9 +14,10 @@ export function formatHistogramOrSummary(
   name: string,
   metric: Metric<HistogramValue>,
   bucketLabel = "le",
+  defaultLabels: Labels = {},
 ): string {
   let str = "";
-  const labels = getLabelPairs(metric);
+  const labels = getLabelPairs(metric, defaultLabels);
   if (labels.length > 0) {
     str += `${name}_count{${labels}} ${metric.value.count}\n`;
     str += `${name}_sum{${labels}} ${metric.value.sum}\n`;
@@ -61,13 +65,12 @@ export function findExistingMetric<T extends MetricValue>(
 export function formatCounterOrGauge(
   name: string,
   metric: Metric<MetricValue>,
+  defaultLabels: Labels = {},
 ): string {
   const value = ` ${metric.value.toString()}`;
-  // If there are no keys on `metric`, it doesn't have a label;
-  // return the count as a string.
-  if (metric.labels == null || Object.keys(metric.labels).length === 0) {
+  const labels = getLabelPairs(metric, defaultLabels);
+  if (labels.length === 0) {
     return `${name}${value}\n`;
   }
-  const pair = Object.entries(metric.labels).map(([k, v]) => `${k}="${v}"`);
-  return `${name}{${pair.join(",")}}${value}\n`;
+  return `${name}{${labels}}${value}\n`;
 }
