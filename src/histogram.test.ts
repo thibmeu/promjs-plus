@@ -11,10 +11,10 @@ describe("Histogram", () => {
   });
 
   it("observes some values", () => {
-    histogram.observe(380);
-    histogram.observe(400);
-    histogram.observe(199);
-    histogram.observe(1200);
+    histogram.observe(380);  // -> 400 bucket
+    histogram.observe(400);  // -> 400 bucket
+    histogram.observe(199);  // -> 200 bucket
+    histogram.observe(1200); // -> +Inf bucket
     const result = histogram.collect();
 
     expect(result.length).equals(1);
@@ -23,12 +23,13 @@ describe("Histogram", () => {
       count: 4,
     });
 
+    // Raw (non-cumulative) bucket counts - cumulative computed at export
     expect(result[0].value.entries).deep.equals({
       200: 1,
-      400: 3,
-      750: 3,
-      1000: 3,
-      "+Inf": 4,
+      400: 2,
+      750: 0,
+      1000: 0,
+      "+Inf": 1,
     });
   });
 

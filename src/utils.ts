@@ -26,15 +26,18 @@ export function formatHistogramOrSummary(
     str += `${name}_sum ${metric.value.sum}\n`;
   }
 
-  return Object.entries(metric.value.entries).reduce(
-    (result, [bucket, count]) => {
-      if (labels.length > 0) {
-        return `${result}${name}_bucket{${bucketLabel}="${bucket}",${labels}} ${count}\n`;
-      }
-      return `${result}${name}_bucket{${bucketLabel}="${bucket}"} ${count}\n`;
-    },
-    str,
-  );
+  // Compute cumulative counts from raw bucket counts
+  let cumulative = 0;
+  for (const [bucket, count] of Object.entries(metric.value.entries)) {
+    cumulative += count;
+    if (labels.length > 0) {
+      str += `${name}_bucket{${bucketLabel}="${bucket}",${labels}} ${cumulative}\n`;
+    } else {
+      str += `${name}_bucket{${bucketLabel}="${bucket}"} ${cumulative}\n`;
+    }
+  }
+
+  return str;
 }
 
 export function findExistingMetric<T extends MetricValue>(

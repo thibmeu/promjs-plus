@@ -1,59 +1,41 @@
 import { Collector } from "./collector";
 import { HistogramValue, HistogramValueEntries, Labels } from "./types";
 
-function findMinBucketIndex(ary: number[], num: number): number | undefined {
-  if (num < ary[ary.length - 1]) {
-    for (let i = 0; i < ary.length; i += 1) {
-      if (num <= ary[i]) {
-        return i;
-      }
-    }
+function getInitialValue(bucketKeys: string[]): HistogramValue {
+  // Integer-like keys are ordered numerically by JS spec, +Inf comes last
+  const entries: HistogramValueEntries = { "+Inf": 0 };
+  for (const key of bucketKeys) {
+    entries[key] = 0;
   }
-
-  return undefined;
-}
-
-function getInitialValue(buckets: number[]): HistogramValue {
-  // Make the skeleton to which values will be saved.
-  const entries = buckets.reduce(
-    (result, b) => {
-      result[b.toString()] = 0;
-      return result;
-    },
-    { "+Inf": 0 } as HistogramValueEntries,
-  );
-
-  return {
-    entries,
-    sum: 0,
-    count: 0,
-  };
+  return { entries, sum: 0, count: 0 };
 }
 
 export class Histogram extends Collector<HistogramValue> {
   private readonly buckets: number[];
+  private readonly bucketKeys: string[];
 
   constructor(buckets: number[] = []) {
     super();
-    // Sort to get smallest -> largest in order.
-    this.buckets = buckets.sort((a, b) => (a > b ? 1 : -1));
-    this.set(getInitialValue(this.buckets));
+    // Sort smallest to largest, pre-compute string keys
+    this.buckets = [...buckets].sort((a, b) => a - b);
+    this.bucketKeys = this.buckets.map(String);
+    this.set(getInitialValue(this.bucketKeys));
     this.observe = this.observe.bind(this);
   }
 
   observe(value: number, labels?: Labels): this {
-    const metric = this.get(labels) ?? this.set(getInitialValue(this.buckets), labels);
+    const metric = this.get(labels) ?? this.set(getInitialValue(this.bucketKeys), labels);
 
-    metric.value.entries["+Inf"] += 1;
-
-    const minBucketIndex = findMinBucketIndex(this.buckets, value);
-
-    if (minBucketIndex != null) {
-      for (let i = minBucketIndex; i < this.buckets.length; i += 1) {
-        const val = metric.value.entries[this.buckets[i].toString()];
-        metric.value.entries[this.buckets[i].toString()] = val + 1;
+    // Find the bucket this value falls into and increment only that bucket
+    // Store raw (non-cumulative) counts; cumulative is computed at export
+    let bucketKey = "+Inf";
+    for (let i = 0; i < this.buckets.length; i++) {
+      if (value <= this.buckets[i]) {
+        bucketKey = this.bucketKeys[i];
+        break;
       }
     }
+    metric.value.entries[bucketKey] += 1;
 
     metric.value.sum += value;
     metric.value.count += 1;
@@ -62,6 +44,6 @@ export class Histogram extends Collector<HistogramValue> {
   }
 
   reset(labels?: Labels): void {
-    this.set(getInitialValue(this.buckets), labels);
+    this.set(getInitialValue(this.bucketKeys), labels);
   }
 }

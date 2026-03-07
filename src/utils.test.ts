@@ -16,13 +16,15 @@ describe("utils", () => {
   });
 
   it("formats a histogram metric", () => {
+    // Raw bucket counts: 200: 0, 300: 2, 400: 0, 500: 0
+    // Cumulative output: 200: 0, 300: 2, 400: 2, 500: 2
     let desired = "";
     desired += "my_histogram_count 2\n";
     desired += "my_histogram_sum 501\n";
     desired += 'my_histogram_bucket{le="200"} 0\n';
     desired += 'my_histogram_bucket{le="300"} 2\n';
-    desired += 'my_histogram_bucket{le="400"} 0\n';
-    desired += 'my_histogram_bucket{le="500"} 0\n';
+    desired += 'my_histogram_bucket{le="400"} 2\n';
+    desired += 'my_histogram_bucket{le="500"} 2\n';
     const simple = {
       value: {
         sum: 501,
@@ -43,9 +45,9 @@ describe("utils", () => {
     desired +=
       'my_histogram_bucket{le="300",instance="some_instance",ok="true"} 2\n';
     desired +=
-      'my_histogram_bucket{le="400",instance="some_instance",ok="true"} 0\n';
+      'my_histogram_bucket{le="400",instance="some_instance",ok="true"} 2\n';
     desired +=
-      'my_histogram_bucket{le="500",instance="some_instance",ok="true"} 0\n';
+      'my_histogram_bucket{le="500",instance="some_instance",ok="true"} 2\n';
 
     expect(formatHistogramOrSummary("my_histogram", complex)).equals(desired);
   });
