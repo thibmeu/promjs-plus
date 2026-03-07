@@ -8,6 +8,7 @@ import {
   HistogramValue,
   Labels,
   Metric,
+  MetricFormat,
   MetricValue,
 } from "./types";
 
@@ -29,6 +30,10 @@ type RegistryItem<T extends CollectorType> = Record<string, {
 
 export interface RegistryOptions {
   defaultLabels?: Labels;
+}
+
+export interface MetricsOptions {
+  format?: MetricFormat;
 }
 
 export class Registry {
@@ -118,15 +123,9 @@ export class Registry {
     return instance;
   }
 
-  /**
-   * Returns a string in the prometheus' desired format
-   * More info: https://prometheus.io/docs/concepts/data_model/
-   * Loop through each metric type (counter, histogram, etc);
-   *
-   * @return {string}
-   */
-  metrics(): string {
-    return Object.entries(this.data).reduce(
+  metrics(options: MetricsOptions = {}): string {
+    const { format = 'prometheus' } = options;
+    const output = Object.entries(this.data).reduce(
       (out, [type, metrics]) =>
         out +
         Object.entries(metrics).reduce((src, [name, metric]) => {
@@ -136,7 +135,6 @@ export class Registry {
             result += `# HELP ${name} ${metric.help}\n`;
           }
           result += `# TYPE ${name} ${type}\n`;
-          // Each metric can have many labels. Iterate over each and append to the string.
           result += values.reduce((str: string, value: Metric<MetricValue>) => {
             const formatted =
               type === "histogram"
@@ -153,6 +151,7 @@ export class Registry {
         }, ""),
       "",
     );
+    return format === 'openmetrics' ? `${output}# EOF\n` : output;
   }
 
   reset(): this {

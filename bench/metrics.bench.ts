@@ -45,7 +45,7 @@ describe('histogram', () => {
 });
 
 describe('registry', () => {
-  bench('metrics() output', () => {
+  bench('full flow: create + record + output', () => {
     const registry = new Registry({ defaultLabels: { env: 'test' } });
     const counter = registry.create('counter', 'req_total', 'Requests');
     const histogram = registry.create('histogram', 'req_duration', 'Duration');
@@ -55,6 +55,21 @@ describe('registry', () => {
     histogram.observe(50, { path: '/api' });
 
     registry.metrics();
+  });
+
+  const registryForMetrics = new Registry({ defaultLabels: { env: 'test' } });
+  const counterForMetrics = registryForMetrics.create('counter', 'req_total', 'Requests');
+  const histogramForMetrics = registryForMetrics.create('histogram', 'req_duration', 'Duration');
+  counterForMetrics.inc({ method: 'GET' });
+  counterForMetrics.add(5, { method: 'POST' });
+  histogramForMetrics.observe(50, { path: '/api' });
+
+  bench('metrics() prometheus', () => {
+    registryForMetrics.metrics();
+  });
+
+  bench('metrics() openmetrics', () => {
+    registryForMetrics.metrics({ format: 'openmetrics' });
   });
 
   bench('reset()', () => {

@@ -1,7 +1,12 @@
 // Cloudflare Workers example - promjs-plus metrics endpoint
 // Zero dependencies, ~5kb, runs on edge
 
-import { Registry } from 'promjs-plus';
+import {
+  Registry,
+  MetricFormat,
+  PROMETHEUS_CONTENT_TYPE,
+  OPENMETRICS_CONTENT_TYPE,
+} from 'promjs-plus';
 
 // Create registry with default labels (applied to all metrics)
 const registry = new Registry({ defaultLabels: { env: 'production', region: 'ewr' } });
@@ -15,10 +20,15 @@ export default {
   async fetch(request: Request): Promise<Response> {
     const url = new URL(request.url);
 
-    // Expose /metrics endpoint for Prometheus scraping
+    // Expose /metrics endpoint for Prometheus/OpenMetrics scraping
     if (url.pathname === '/metrics') {
-      return new Response(registry.metrics(), {
-        headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+      // Content negotiation: prefer OpenMetrics if client accepts it
+      const accept = request.headers.get('Accept') || '';
+      const format: MetricFormat = accept.includes('openmetrics') ? 'openmetrics' : 'prometheus';
+      const contentType = format === 'openmetrics' ? OPENMETRICS_CONTENT_TYPE : PROMETHEUS_CONTENT_TYPE;
+
+      return new Response(registry.metrics({ format }), {
+        headers: { 'Content-Type': contentType },
       });
     }
 

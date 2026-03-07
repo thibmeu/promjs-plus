@@ -26,3 +26,5 @@ export interface Metric<T extends MetricValue> {
 }
 
 export type Labels = Record<string, string | number>;
+
+export type MetricFormat = 'prometheus' | 'openmetrics';

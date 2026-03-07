@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { Collector } from "./collector";
 import { Counter } from "./counter";
 import { Registry } from "./registry";
+import { PROMETHEUS_CONTENT_TYPE, OPENMETRICS_CONTENT_TYPE } from "./index";
 
 describe("Registry", () => {
   let registry: Registry;
@@ -94,6 +95,39 @@ describe("Registry", () => {
       expect(output).contains('latency_count{env="test"} 1');
       expect(output).contains('latency_sum{env="test"} 50');
       expect(output).contains('latency_bucket{le="100",env="test"} 1');
+    });
+  });
+
+  describe("output format", () => {
+    it("defaults to prometheus format (no EOF)", () => {
+      const output = registry.metrics();
+      expect(output).not.contains("# EOF");
+    });
+
+    it("prometheus format explicitly (no EOF)", () => {
+      counter.inc();
+      const output = registry.metrics({ format: "prometheus" });
+      expect(output).not.contains("# EOF");
+      expect(output).contains("my_counter 1");
+    });
+
+    it("openmetrics format appends EOF", () => {
+      counter.inc();
+      const output = registry.metrics({ format: "openmetrics" });
+      expect(output).contains("my_counter 1");
+      expect(output.endsWith("# EOF\n")).equals(true);
+    });
+
+    it("openmetrics and prometheus output identical except EOF", () => {
+      counter.add(5);
+      const prom = registry.metrics({ format: "prometheus" });
+      const om = registry.metrics({ format: "openmetrics" });
+      expect(om).equals(`${prom}# EOF\n`);
+    });
+
+    it("exports content type constants", () => {
+      expect(PROMETHEUS_CONTENT_TYPE).equals("text/plain; version=0.0.4");
+      expect(OPENMETRICS_CONTENT_TYPE).equals("application/openmetrics-text; version=1.0.0");
     });
   });
 });
