@@ -52,7 +52,7 @@ export class Registry {
   }
 
   getDefaultLabels(): Labels {
-    return this._defaultLabels;
+    return { ...this._defaultLabels };
   }
 
   private validateInput(
