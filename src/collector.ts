@@ -3,16 +3,32 @@ import { findExistingMetric } from "./utils";
 
 export abstract class Collector<T extends MetricValue> {
   private readonly data: Metric<T>[];
+  // Fast path cache for no-label metric
+  private noLabelMetric: Metric<T> | undefined;
 
   constructor() {
     this.data = [];
+    this.noLabelMetric = undefined;
   }
 
   get(labels?: Labels): Metric<T> | undefined {
+    if (!labels) {
+      return this.noLabelMetric;
+    }
     return findExistingMetric<T>(labels, this.data);
   }
 
   set(value: T, labels?: Labels): Metric<T> {
+    if (!labels) {
+      if (this.noLabelMetric) {
+        this.noLabelMetric.value = value;
+        return this.noLabelMetric;
+      }
+      const metric: Metric<T> = { labels: undefined, value };
+      this.noLabelMetric = metric;
+      this.data.push(metric);
+      return metric;
+    }
     const existing = findExistingMetric(labels, this.data);
     if (existing) {
       existing.value = value;

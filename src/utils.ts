@@ -38,22 +38,17 @@ export function formatHistogramOrSummary(
 }
 
 export function findExistingMetric<T extends MetricValue>(
-  labels?: Labels,
-  values: Metric<T>[] = [],
+  labels: Labels,
+  values: Metric<T>[],
 ): Metric<T> | undefined {
-  // If there are no labels, there can only be one metric
-  if (!labels) {
-    return values[0];
-  }
   return values.find((v) => {
     if (!v.labels) {
       return false;
     }
-    if (Object.keys(v.labels || {}).length !== Object.keys(labels).length) {
+    if (Object.keys(v.labels).length !== Object.keys(labels).length) {
       return false;
     }
-    const entries = Object.entries(labels);
-    for (const [label, value] of entries) {
+    for (const [label, value] of Object.entries(labels)) {
       if (v.labels[label] !== value) {
         return false;
       }

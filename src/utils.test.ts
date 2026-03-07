@@ -28,7 +28,6 @@ describe("utils", () => {
         sum: 501,
         count: 2,
         entries: { 200: 0, 300: 2, 400: 0, 500: 0 },
-        raw: [201, 300],
       },
     };
     const complex = {

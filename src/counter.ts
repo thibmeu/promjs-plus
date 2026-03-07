@@ -3,8 +3,7 @@ import { CounterValue, Labels } from "./types";
 
 export class Counter extends Collector<CounterValue> {
   inc(labels?: Labels): this {
-    this.add(1, labels);
-    return this;
+    return this.add(1, labels);
   }
 
   add(amount: number, labels?: Labels): this {
@@ -14,8 +13,11 @@ export class Counter extends Collector<CounterValue> {
       );
     }
     const metric = this.get(labels);
-    this.set(metric ? metric.value + amount : amount, labels);
-
+    if (metric) {
+      metric.value += amount;
+    } else {
+      this.set(amount, labels);
+    }
     return this;
   }
 
