@@ -1,13 +1,20 @@
 # promjs-plus
 
-A Prometheus metrics registry implemented in TypeScript. It forks [weaveworks/promjs](https://github.com/weaveworks/promjs) which is deprecated.
+[![npm version](https://img.shields.io/npm/v/promjs-plus)](https://www.npmjs.com/package/promjs-plus)
+[![npm downloads](https://img.shields.io/npm/dw/promjs-plus)](https://www.npmjs.com/package/promjs-plus)
+[![license](https://img.shields.io/npm/l/promjs-plus)](https://github.com/thibmeu/promjs-plus/blob/main/LICENSE)
 
-## Goals
+A Prometheus metrics registry implemented in TypeScript. Zero dependencies, ~5KB, runs in Node.js, browsers, and Cloudflare Workers.
 
-- Stick to [Prometheus client best practices](https://prometheus.io/docs/instrumenting/writing_clientlibs/) as closely as possible
-- Run in Node.js or the browser
-- Fit into the modern JavaScript ecosystem
-- Minimally rely on third-party dependencies
+Forked from [weaveworks/promjs](https://github.com/weaveworks/promjs) (deprecated).
+
+## Features
+
+- **Zero dependencies** - runs anywhere JavaScript runs
+- **Fast** - optimized for high-throughput metrics collection
+- **Edge-ready** - works in Cloudflare Workers, Deno, browsers
+- **TypeScript** - full type safety
+- **Prometheus-compliant** - follows [client best practices](https://prometheus.io/docs/instrumenting/writing_clientlibs/)
 
 ## Installation
 
@@ -42,6 +49,16 @@ Returns a registry class.
 
 ## Registry
 
+### new Registry([options]) => registry
+
+Creates a new registry. Optionally pass default labels that will be applied to all metrics.
+
+```javascript
+import { Registry } from 'promjs-plus';
+
+const registry = new Registry({ defaultLabels: { env: 'production', region: 'us-east-1' } });
+```
+
 ### registry.create(type, name, help) => collector (_counter | gauge | histogram_)
 
 Returns a metric class of the specified type. The metric is already registered with the registry that creates it.
@@ -59,6 +76,14 @@ import prom from 'promjs-plus';
 const registry = prom();
 const counter = registry.create('counter', 'my_counter', 'A counter for things');
 ```
+
+### registry.setDefaultLabels(labels) => self
+
+Sets default labels applied to all metrics in output. Metric-level labels override defaults.
+
+### registry.getDefaultLabels() => object
+
+Returns a copy of the current default labels.
 
 ### registry.metrics() => string
 
