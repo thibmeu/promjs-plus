@@ -17,7 +17,6 @@ export interface HistogramValue {
   entries: HistogramValueEntries;
   sum: number;
   count: number;
-  raw: number[];
 }
 
 export type MetricValue = CounterValue | HistogramValue;

@@ -45,7 +45,6 @@ describe("Histogram", () => {
         value: {
           sum: 0,
           count: 0,
-          raw: [],
           entries: {
             200: 0,
             400: 0,

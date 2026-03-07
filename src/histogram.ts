@@ -27,7 +27,6 @@ function getInitialValue(buckets: number[]): HistogramValue {
     entries,
     sum: 0,
     count: 0,
-    raw: [],
   };
 }
 
@@ -45,7 +44,6 @@ export class Histogram extends Collector<HistogramValue> {
   observe(value: number, labels?: Labels): this {
     const metric = this.get(labels) ?? this.set(getInitialValue(this.buckets), labels);
 
-    metric.value.raw.push(value);
     metric.value.entries["+Inf"] += 1;
 
     const minBucketIndex = findMinBucketIndex(this.buckets, value);
@@ -57,7 +55,7 @@ export class Histogram extends Collector<HistogramValue> {
       }
     }
 
-    metric.value.sum = metric.value.raw.reduce((sum, v) => sum + v, 0);
+    metric.value.sum += value;
     metric.value.count += 1;
 
     return this;
