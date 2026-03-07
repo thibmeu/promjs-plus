@@ -11,7 +11,7 @@ describe("Gauge", () => {
   it("sets the gauge", () => {
     const value = 55;
 
-    expect(gauge.set(value).get()!.value).equals(value);
+    expect(gauge.set(value).value).equals(value);
   });
   it("increments and decrements values", () => {
     expect(gauge.inc().get()!.value).equals(1);

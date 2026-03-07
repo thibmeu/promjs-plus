@@ -43,11 +43,7 @@ export class Histogram extends Collector<HistogramValue> {
   }
 
   observe(value: number, labels?: Labels): this {
-    let metric = this.get(labels);
-    if (metric == null) {
-      // Create a metric for the labels.
-      metric = this.set(getInitialValue(this.buckets), labels).get(labels)!;
-    }
+    const metric = this.get(labels) ?? this.set(getInitialValue(this.buckets), labels);
 
     metric.value.raw.push(value);
     metric.value.entries["+Inf"] += 1;

@@ -12,18 +12,15 @@ export abstract class Collector<T extends MetricValue> {
     return findExistingMetric<T>(labels, this.data);
   }
 
-  set(value: T, labels?: Labels): this {
+  set(value: T, labels?: Labels): Metric<T> {
     const existing = findExistingMetric(labels, this.data);
     if (existing) {
       existing.value = value;
-    } else {
-      this.data.push({
-        labels,
-        value,
-      });
+      return existing;
     }
-
-    return this;
+    const metric: Metric<T> = { labels, value };
+    this.data.push(metric);
+    return metric;
   }
 
   collect(labels?: Labels): Metric<T>[] {
