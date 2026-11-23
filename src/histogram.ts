@@ -2,7 +2,6 @@ import { Collector } from "./collector";
 import { HistogramValue, HistogramValueEntries, Labels } from "./types";
 
 function getInitialValue(bucketKeys: readonly string[]): HistogramValue {
-  // Key order doesn't matter: buckets are exported in bucketKeys order
   const entries: HistogramValueEntries = { "+Inf": 0 };
   for (const key of bucketKeys) {
     entries[key] = 0;
@@ -12,17 +11,12 @@ function getInitialValue(bucketKeys: readonly string[]): HistogramValue {
 
 export class Histogram extends Collector<HistogramValue> {
   private readonly buckets: number[];
-  // Keys of the finite bounds, smallest first: the order buckets are exported
-  // in. "+Inf" is always there and always last, so it isn't listed.
   readonly bucketKeys: readonly string[];
 
   constructor(buckets: number[] = []) {
     super();
-    // Sort smallest to largest, drop repeats and an explicit +Inf,
-    // pre-compute string keys
-    this.buckets = [...new Set(buckets)]
-      .filter((bound) => bound !== Infinity)
-      .sort((a, b) => a - b);
+    // Finite bounds only (+Inf is implicit), deduped, smallest first
+    this.buckets = [...new Set(buckets.filter(Number.isFinite))].sort((a, b) => a - b);
     this.bucketKeys = this.buckets.map(String);
     this.set(getInitialValue(this.bucketKeys));
     this.observe = this.observe.bind(this);

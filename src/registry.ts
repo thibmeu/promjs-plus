@@ -12,7 +12,7 @@ import {
   MetricValue,
 } from "./types";
 
-import { formatCounterOrGauge, formatHistogramOrSummary } from "./utils";
+import { formatCounterOrGauge, formatHistogram } from "./utils";
 
 type CollectorForType<T extends CollectorType> = T extends "histogram"
   ? Histogram
@@ -138,11 +138,10 @@ export class Registry {
           result += values.reduce((str: string, value: Metric<MetricValue>) => {
             const formatted =
               type === "histogram"
-                ? formatHistogramOrSummary(
+                ? formatHistogram(
                     name,
                     value as Metric<HistogramValue>,
                     (metric.instance as Histogram).bucketKeys,
-                    "le",
                     this._defaultLabels,
                   )
                 : formatCounterOrGauge(name, value as Metric<CounterValue>, this._defaultLabels);

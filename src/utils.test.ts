@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatCounterOrGauge, formatHistogramOrSummary } from "./utils";
+import { formatCounterOrGauge, formatHistogram } from "./utils";
 
 describe("utils", () => {
   it("formats a counter/gauge metric", () => {
@@ -38,7 +38,7 @@ describe("utils", () => {
       ...simple,
       labels: { instance: "some_instance", ok: "true" },
     };
-    expect(formatHistogramOrSummary("my_histogram", simple, bucketKeys)).equals(
+    expect(formatHistogram("my_histogram", simple, bucketKeys)).equals(
       desired,
     );
 
@@ -55,7 +55,7 @@ describe("utils", () => {
     desired +=
       'my_histogram_bucket{le="+Inf",instance="some_instance",ok="true"} 2\n';
 
-    expect(formatHistogramOrSummary("my_histogram", complex, bucketKeys)).equals(
+    expect(formatHistogram("my_histogram", complex, bucketKeys)).equals(
       desired,
     );
   });
