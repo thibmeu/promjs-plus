@@ -64,11 +64,11 @@ describe('registry', () => {
       const registry = new Registry({ defaultLabels: { env: 'test' } });
       const counter = registry.create('counter', 'req_total', 'Requests');
       const histogram = registry.create('histogram', 'req_duration', 'Duration');
-  
+
       counter.inc({ method: 'GET' });
       counter.add(5, { method: 'POST' });
       histogram.observe(50, { path: '/api' });
-  
+
       registry.metrics();
     }).run();
   });
